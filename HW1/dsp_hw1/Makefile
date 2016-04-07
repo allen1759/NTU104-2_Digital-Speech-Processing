@@ -17,7 +17,7 @@
 CFLAGS+=
 LDFLAGS+=-lm     # link to math library
 
-TARGET=test_hmm 
+TARGET=train
 # TARGET=test_hmm train test
 
 all: $(TARGET)
