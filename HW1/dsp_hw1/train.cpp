@@ -18,7 +18,7 @@ int main(int argc, char* argv[])
     int numOfIter;
     sscanf(argv[1], "%d", &numOfIter);
     string initFileName = argv[2];
-    string tranFileName = argv[3];
+    string trainFileName = argv[3];
     string outFileName = argv[4];
 
     // load init model from file (using hmm.h)
@@ -29,9 +29,9 @@ int main(int argc, char* argv[])
     
     // load trainning files
     fstream trainFile;
-    trainFile.open(tranFileName, ios::in);
+    trainFile.open(trainFileName, ios::in);
     if( !trainFile.is_open() ) {
-        cout << "Cannot find the file: " << trainFile << endl;
+        cout << "Cannot find the file: " << trainFileName << endl;
         return -1;
     }
     vector<string> allobserv;
@@ -67,7 +67,7 @@ void trainning( const vector<string> & allobserv, HMM & currModel )
     
     for( int line=0; line<allobserv.size(); line+=1 ) {
         // initial alpha
-        vector< vector<int> > alpha(stateNum, std::vector<int>(timeNum, 0.0));
+        vector< vector<double> > alpha(stateNum, std::vector<double>(timeNum, 0.0));
         for( int i=0; i<stateNum; i+=1 ) {
             alpha[i][0] = currModel.initial[i];
             alpha[i][0] *= currModel.observation[ allobserv[line][0]-'A' ][ i ];
@@ -85,7 +85,7 @@ void trainning( const vector<string> & allobserv, HMM & currModel )
         
         
         // initial beta
-        vector< vector<int> > beta(stateNum, std::vector<int>(timeNum, 0.0));
+        vector< vector<double> > beta(stateNum, std::vector<double>(timeNum, 0.0));
         for( int i=0; i<stateNum; i+=1 ) {
             beta[i][timeNum-1] = 1.0;
         }
@@ -104,7 +104,7 @@ void trainning( const vector<string> & allobserv, HMM & currModel )
         
         
         // ==================== gamma ====================
-        vector< vector<int> > gamma(stateNum, std::vector<int>(timeNum, 0.0));
+        vector< vector<double> > gamma(stateNum, std::vector<double>(timeNum, 0.0));
         // compute gamma
         for( int t=0; t<timeNum; t+=1 ) {
             double sum = 0;
