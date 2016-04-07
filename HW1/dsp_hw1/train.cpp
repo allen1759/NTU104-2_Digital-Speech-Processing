@@ -29,7 +29,7 @@ int main(int argc, char* argv[])
     
     // load trainning files
     fstream trainFile;
-    trainFile.open(trainFileName, ios::in);
+    trainFile.open(trainFileName.c_str(), ios::in);
     if( !trainFile.is_open() ) {
         cout << "Cannot find the file: " << trainFileName << endl;
         return -1;
