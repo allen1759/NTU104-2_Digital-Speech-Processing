@@ -79,7 +79,7 @@ void trainning( const vector<string> & allobserv, HMM & currModel )
                 for( int j=0; j<stateNum; j+=1 ) {
                     val += alpha[j][t-1] * currModel.transition[j][i];
                 }
-                alpha[i][t] = val * currModel.observation[ allobserv[line][t]-'a' ][ i ];
+                alpha[i][t] = val * currModel.observation[ allobserv[line][t]-'A' ][ i ];
             }
         }
         
@@ -141,7 +141,7 @@ void trainning( const vector<string> & allobserv, HMM & currModel )
         // ==================== epsilon ====================
         vector< vector< vector<double> > > epsilon(stateNum, std::vector< std::vector<double> >(stateNum, std::vector<double>(timeNum, 0.0)));
         // compute epsilon
-        for(int t=0; t+1<timeNum; t+=1) {
+        for( int t=0; t+1<timeNum; t+=1 ) {
             double divide = 0.0;
             for( int i=0; i<stateNum; i+=1 ) {
                 for( int j=0; j<stateNum; j+=1 ) {
