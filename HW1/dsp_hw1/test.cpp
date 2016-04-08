@@ -12,20 +12,19 @@ int Viterbi( HMM (&allModels)[modelSize], const string & obsers );
 
 int main(int argc, char* argv[])
 {
-    //if( argc != 5 ) {
-    //    cout << "Please input correct parameters." << endl;
-    //    return -1;
-    //}
+    if( argc != 4 ) {
+        cout << "Please input correct parameters." << endl;
+        return -1;
+    }
     // setting parameters
-    //int numOfIter;
-    //sscanf(argv[1], "%d", &numOfIter);
-    //string initFileName = argv[2];
-	//string trainFileName = argv[3];
-    //string outFileName = argv[4];
-	int numOfIter = 10;
-	string modelListName = "modellist.txt";
-	string testFileName = "testing_data1.txt";
-	string resultFileName = "result1.txt";
+    string modelListName = argv[1];
+	string testFileName = argv[2];
+    string resultFileName = argv[3];
+
+    // for test
+	// string modelListName = "modellist.txt";
+	// string testFileName = "testing_data1.txt";
+	// string resultFileName = "result1.txt";
 
 	// load model name
     fstream modelList;
@@ -44,7 +43,7 @@ int main(int argc, char* argv[])
     // load all of models (using hmm.h)
 	HMM allModels[modelSize];
 	Load_models( modelListName.c_str(), allModels, modelSize );
-	dump_models( allModels, modelSize );
+	// dump_models( allModels, modelSize );
     
 	fstream testFile;
 	testFile.open( testFileName.c_str(), ios::in );
@@ -113,23 +112,23 @@ int Viterbi( HMM (&allModels)[modelSize], const string & obsers )
 			}
 		}
 		// for debug
-		double print[6][50];
-		for(int i=0; i<6; i+=1) {
-			for(int j=0; j<50; j+=1) {
-				print[i][j] = delta[m][i][j];
-			}
-		}
+		// double print[6][50];
+		// for(int i=0; i<6; i+=1) {
+		// 	for(int j=0; j<50; j+=1) {
+		// 		print[i][j] = delta[m][i][j];
+		// 	}
+		// }
 
 		int x = 0;
 	}
 
 	double maxVal = 0.0;
 	int maxModel = 0;
-	double arr[10][10] = { 0 };
+	// double arr[10][10] = { 0 };
 	for( int m=0; m<modelSize; m+=1 ) {
 		for( int i=0; i<stateNum; i+=1 ) {
-			if (arr[m][i] < delta[m][i][timeNum - 1])
-				arr[m][i] = delta[m][i][timeNum - 1];
+			// if (arr[m][i] < delta[m][i][timeNum - 1])
+			//    	arr[m][i] = delta[m][i][timeNum - 1];
 
 			if( delta[m][i][timeNum-1] > maxVal ) {
 				maxVal = delta[m][i][timeNum-1];

@@ -5,10 +5,8 @@ using namespace std;
 
 int main(int argc, char* argv[])
 {
-    //string file1= argv[1];
-	//string file2= argv[2];
-	string file1= "modellist.txt";
-	string file2= "testing_data1.txt";
+    string file1= argv[1];
+	string file2= argv[2];
 
 	// load model name
     fstream fs1, fs2;
