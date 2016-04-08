@@ -21,7 +21,7 @@ int main(int argc, char* argv[])
 	string testFileName = argv[2];
     string resultFileName = argv[3];
 
-    // for test
+    // just for test
 	// string modelListName = "modellist.txt";
 	// string testFileName = "testing_data1.txt";
 	// string resultFileName = "result1.txt";
@@ -43,6 +43,7 @@ int main(int argc, char* argv[])
     // load all of models (using hmm.h)
 	HMM allModels[modelSize];
 	Load_models( modelListName.c_str(), allModels, modelSize );
+    // just for test
 	// dump_models( allModels, modelSize );
     
 	fstream testFile;
@@ -71,8 +72,6 @@ int main(int argc, char* argv[])
 void testing( HMM (&allModels)[modelSize], fstream & testFile, fstream & resFile, vector<string> & modelNameStr )
 {
 	string line;
-	int cntTotal = 0;
-	int correct = 0;
 
 	while( getline(testFile, line) && line!="" ) {
 		int predictModle = Viterbi( allModels, line);
@@ -87,9 +86,8 @@ int Viterbi( HMM (&allModels)[modelSize], const string & obsers )
 	const int timeNum = obsers.size();				// 1~T
 	vector< vector< vector<double> > > delta(modelSize, std::vector< std::vector<double> >(stateNum, std::vector<double>(timeNum, 0.0)));	//[modelNum][stateNum][timeNum]
 
-	// delta for all models
+	// initial delta varible (same as alpha)
 	for (int m = 0; m < modelSize; m += 1) {
-		// initial delta varible (same as alpha)
 		HMM & currModel = allModels[m];
 		for (int i = 0; i < stateNum; i += 1) {
 			delta[m][i][0] = currModel.initial[i];
@@ -97,8 +95,8 @@ int Viterbi( HMM (&allModels)[modelSize], const string & obsers )
 		}
 	}
 
+	// induction delta
 	for( int m=0; m<modelSize; m+=1 ) {
-		// induction delta
 		HMM & currModel = allModels[m];
 		for( int t=0; t+1<timeNum; t+=1 ) {
 			for( int j=0; j<stateNum; j+=1 ) {
@@ -124,12 +122,9 @@ int Viterbi( HMM (&allModels)[modelSize], const string & obsers )
 
 	double maxVal = 0.0;
 	int maxModel = 0;
-	// double arr[10][10] = { 0 };
+
 	for( int m=0; m<modelSize; m+=1 ) {
 		for( int i=0; i<stateNum; i+=1 ) {
-			// if (arr[m][i] < delta[m][i][timeNum - 1])
-			//    	arr[m][i] = delta[m][i][timeNum - 1];
-
 			if( delta[m][i][timeNum-1] > maxVal ) {
 				maxVal = delta[m][i][timeNum-1];
 				maxModel = m;
@@ -139,4 +134,3 @@ int Viterbi( HMM (&allModels)[modelSize], const string & obsers )
 
 	return maxModel;
 }
-

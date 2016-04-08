@@ -27,7 +27,7 @@ int main(int argc, char* argv[])
     // just for test
     // dumpHMM( stdout, &initModel );
     
-    // load trainning files
+    // load trainning data 
     fstream trainFile;
     trainFile.open(trainFileName.c_str(), ios::in);
     if( !trainFile.is_open() ) {
@@ -46,6 +46,7 @@ int main(int argc, char* argv[])
         trainning( allobserv, myModel );
     }
     
+    // re-write trainning model
     FILE * outFilePointer = NULL;
     outFilePointer = fopen(outFileName.c_str(), "w");
     dumpHMM( outFilePointer, &myModel);
