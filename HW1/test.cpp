@@ -8,7 +8,7 @@ using namespace std;
 
 const int modelSize = 5;
 void testing( HMM (&allModels)[modelSize], fstream & testFile, fstream & resFile, vector<string> & modelNameStr );
-int Viterbi( HMM (&allModels)[modelSize], const string & obsers );
+int Viterbi( HMM (&allModels)[modelSize], const string & obsers, double & actualVal );
 
 int main(int argc, char* argv[])
 {
@@ -74,13 +74,15 @@ void testing( HMM (&allModels)[modelSize], fstream & testFile, fstream & resFile
 	string line;
 
 	while( getline(testFile, line) && line!="" ) {
-		int predictModle = Viterbi( allModels, line);
+		double actualVal = 0.0;
+		int predictModle = Viterbi( allModels, line, actualVal );
 
-		resFile << modelNameStr[ predictModle ] << endl;
+		resFile << modelNameStr[ predictModle ] << " "
+				<< actualVal << endl;
 	}
 }
 
-int Viterbi( HMM (&allModels)[modelSize], const string & obsers )
+int Viterbi( HMM (&allModels)[modelSize], const string & obsers, double & actualVal )
 {
 	const int stateNum = allModels[0].state_num;	// 1~N
 	const int timeNum = obsers.size();				// 1~T
@@ -132,5 +134,6 @@ int Viterbi( HMM (&allModels)[modelSize], const string & obsers )
 		}
 	}
 
+	actualVal = maxVal;
 	return maxModel;
 }
