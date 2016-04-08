@@ -6,6 +6,10 @@
 #include "hmm.h"
 using namespace std;
 
+void Calculate( const int stateNum, const int timeNum, const int obsNum, const int line, 
+                HMM& currModel, const vector<string>& allobserv,
+                vector<double>& accumuGammaFront, vector<double>& accumuGamma,
+                vector< vector<double> >& accumuObv, vector< vector<double> >& accumuEpsilon );
 void trainning( const vector<string> & allobserv, HMM & currModel );
 
 int main(int argc, char* argv[])
@@ -54,6 +58,107 @@ int main(int argc, char* argv[])
     return 0;
 }
 
+void Calculate( const int stateNum, const int timeNum, const int obsNum, const int line, 
+                HMM& currModel, const vector<string>& allobserv,
+                vector<double>& accumuGammaFront, vector<double>& accumuGamma,
+                vector< vector<double> >& accumuObv, vector< vector<double> >& accumuEpsilon )
+{
+    // ==================== alpha ====================
+    vector< vector<double> > alpha(stateNum, std::vector<double>(timeNum, 0.0));
+    for( int i=0; i<stateNum; i+=1 ) {
+        alpha[i][0] = currModel.initial[i];
+        alpha[i][0] *= currModel.observation[ allobserv[line][0]-'A' ][ i ];
+    }
+    // induction alpha
+    for( int t=1; t<timeNum; t+=1 ) {
+        for( int i=0; i<stateNum; i+=1 ) {
+            double val = 0;
+            for( int j=0; j<stateNum; j+=1 ) {
+                val += alpha[j][t-1] * currModel.transition[j][i];
+            }
+            alpha[i][t] = val * currModel.observation[ allobserv[line][t]-'A' ][ i ];
+        }
+    }
+
+    // ==================== beta ====================
+    vector< vector<double> > beta(stateNum, std::vector<double>(timeNum, 0.0));
+    for( int i=0; i<stateNum; i+=1 ) {
+        beta[i][timeNum-1] = 1.0;
+    }
+    // induction beta
+    for( int t=timeNum-2; t>=0; t-=1 ) {
+        for( int i=0; i<stateNum; i+=1 ) {
+            double val = 0;
+            for( int j=0; j<stateNum; j+=1 ) {
+                val += currModel.transition[i][j] *
+                       currModel.observation[ allobserv[line][t+1]-'A' ][ j ] *
+                       beta[j][t+1];
+            }
+            beta[i][t] = val;
+        }
+    }
+    
+    
+    // ==================== gamma ====================
+    vector< vector<double> > gamma(stateNum, std::vector<double>(timeNum, 0.0));
+    // compute gamma
+    for( int t=0; t<timeNum; t+=1 ) {
+        double sum = 0;
+        for( int i=0; i<stateNum; i+=1 ) {
+            gamma[i][t] = alpha[i][t] * beta[i][t];
+            sum += gamma[i][t];
+        }
+        for( int i=0; i<stateNum; i+=1 ) {
+            gamma[i][t] /= sum;
+        }
+    }
+    // ----- accumulate gamma -----
+    for( int i=0; i<stateNum; i+=1 ) {
+        accumuGammaFront[i] += gamma[i][0];
+    }
+    for( int t=0; t+1<timeNum; t+=1 ) {
+        for( int i=0; i<stateNum; i+=1 ) {
+            accumuGamma[i] += gamma[i][t];
+        }
+    }
+    
+    // ----- accumulate observation -----
+    for( int i=0; i<obsNum; i+=1 ) {
+        for( int j=0; j<stateNum; j+=1 ) {
+            for( int k=0; k<allobserv[line].size(); k+=1 ) {
+                if( allobserv[line][k]-'A' == i ) {
+                    accumuObv[i][j] += gamma[j][k];
+                }
+            }
+        }
+    }
+    
+    
+    // ==================== epsilon ====================
+    vector< vector< vector<double> > > epsilon(stateNum, std::vector< std::vector<double> >(stateNum, std::vector<double>(timeNum, 0.0)));
+    // compute epsilon
+    for( int t=0; t+1<timeNum; t+=1 ) {
+        double divide = 0.0;
+        for( int i=0; i<stateNum; i+=1 ) {
+            for( int j=0; j<stateNum; j+=1 ) {
+                epsilon[i][j][t] = alpha[i][t]
+                                 * currModel.transition[i][j]
+                                 * currModel.observation[ allobserv[line][t+1]-'A' ][ j ]
+                                 * beta[j][t+1];
+                divide += epsilon[i][j][t];
+            }
+        }
+        for( int i=0; i<stateNum; i+=1 ) {
+            for( int j=0; j<stateNum; j+=1 ) {
+                epsilon[i][j][t] /= divide;
+                
+                // ----- accumulate epsilon -----
+                accumuEpsilon[i][j] += epsilon[i][j][t];
+            }
+        }
+    }
+}
+
 void trainning( const vector<string> & allobserv, HMM & currModel )
 {
     const int stateNum = currModel.state_num;   // 1~N
@@ -66,106 +171,17 @@ void trainning( const vector<string> & allobserv, HMM & currModel )
     vector< vector<double> > accumuObv(obsNum, std::vector<double>(stateNum, 0.0));
     
     
+    // caculate through all observation
     for( int line=0; line<allobserv.size(); line+=1 ) {
-        // initial alpha
-        vector< vector<double> > alpha(stateNum, std::vector<double>(timeNum, 0.0));
-        for( int i=0; i<stateNum; i+=1 ) {
-            alpha[i][0] = currModel.initial[i];
-            alpha[i][0] *= currModel.observation[ allobserv[line][0]-'A' ][ i ];
-        }
-        // induction alpha
-        for( int t=1; t<timeNum; t+=1 ) {
-            for( int i=0; i<stateNum; i+=1 ) {
-                double val = 0;
-                for( int j=0; j<stateNum; j+=1 ) {
-                    val += alpha[j][t-1] * currModel.transition[j][i];
-                }
-                alpha[i][t] = val * currModel.observation[ allobserv[line][t]-'A' ][ i ];
-            }
-        }
-        
-        
-        // initial beta
-        vector< vector<double> > beta(stateNum, std::vector<double>(timeNum, 0.0));
-        for( int i=0; i<stateNum; i+=1 ) {
-            beta[i][timeNum-1] = 1.0;
-        }
-        // induction beta
-        for( int t=timeNum-2; t>=0; t-=1 ) {
-            for( int i=0; i<stateNum; i+=1 ) {
-                double val = 0;
-                for( int j=0; j<stateNum; j+=1 ) {
-                    val += currModel.transition[i][j] *
-                           currModel.observation[ allobserv[line][t+1]-'A' ][ j ] *
-                           beta[j][t+1];
-                }
-                beta[i][t] = val;
-            }
-        }
-        
-        
-        // ==================== gamma ====================
-        vector< vector<double> > gamma(stateNum, std::vector<double>(timeNum, 0.0));
-        // compute gamma
-        for( int t=0; t<timeNum; t+=1 ) {
-            double sum = 0;
-            for( int i=0; i<stateNum; i+=1 ) {
-                gamma[i][t] = alpha[i][t] * beta[i][t];
-                sum += gamma[i][t];
-            }
-            for( int i=0; i<stateNum; i+=1 ) {
-                gamma[i][t] /= sum;
-            }
-        }
-        // ----- accumulate gamma -----
-        for( int i=0; i<stateNum; i+=1 ) {
-            accumuGammaFront[i] += gamma[i][0];
-        }
-        for( int t=0; t+1<timeNum; t+=1 ) {
-            for( int i=0; i<stateNum; i+=1 ) {
-                accumuGamma[i] += gamma[i][t];
-            }
-        }
-        
-        // ----- accumulate observation -----
-        for( int i=0; i<obsNum; i+=1 ) {
-            for( int j=0; j<stateNum; j+=1 ) {
-                for( int k=0; k<allobserv[line].size(); k+=1 ) {
-                    if( allobserv[line][k]-'A' == i ) {
-                        accumuObv[i][j] += gamma[j][k];
-                    }
-                }
-            }
-        }
-        
-        
-        // ==================== epsilon ====================
-        vector< vector< vector<double> > > epsilon(stateNum, std::vector< std::vector<double> >(stateNum, std::vector<double>(timeNum, 0.0)));
-        // compute epsilon
-        for( int t=0; t+1<timeNum; t+=1 ) {
-            double divide = 0.0;
-            for( int i=0; i<stateNum; i+=1 ) {
-                for( int j=0; j<stateNum; j+=1 ) {
-                    epsilon[i][j][t] = alpha[i][t]
-                                     * currModel.transition[i][j]
-                                     * currModel.observation[ allobserv[line][t+1]-'A' ][ j ]
-                                     * beta[j][t+1];
-                    divide += epsilon[i][j][t];
-                }
-            }
-            for( int i=0; i<stateNum; i+=1 ) {
-                for( int j=0; j<stateNum; j+=1 ) {
-                    epsilon[i][j][t] /= divide;
-                    
-                    // ----- accumulate epsilon -----
-                    accumuEpsilon[i][j] += epsilon[i][j][t];
-                }
-            }
-        }
+        // passing variable with reference
+        Calculate( stateNum, timeNum, obsNum, line, 
+                   currModel,  allobserv,
+                   accumuGammaFront,  accumuGamma,
+                   accumuObv, accumuEpsilon );
     }
     
     
-    // start modify the model
+    // ===== start modify the model =====
     
     // initial probability
     for( int i=0; i<stateNum; i+=1 ) {
