@@ -15,7 +15,7 @@ model_list=lib/models.lst
 #################################################
 # re-adjust mean, var
 echo "step 01 [HErest]: adjust mean, var..."
-for i in 0 1 2 ;
+for i in 0 1 2 3 4 5 ;
 do
 	echo "iteration $i"
 	HERest -C $config -I $label \
@@ -37,7 +37,7 @@ HHEd -T 2 -H $macro -H $model -M $mmf_dir lib/sil1.hed $model_list
 
 # re-adjust mean, var
 echo "step 03 [HErest]: adjust mean, var..."
-for i in 0 1 2 ;
+for i in 0 1 2 3 4 5 ;
 do
 	echo "iteration $i"
 	HERest -C $config -I $label \
@@ -53,7 +53,7 @@ HHEd -T 2 -H $macro -H $model -M $mmf_dir lib/mix2_10.hed $model_list
 
 # re-adjust mean, var
 echo "step 05 [HERest]: adjust mean, var..."
-for i in 0 1 2 3 4 5 ;
+for i in 0 1 2 3 4 5 6 7 8 ;
 do
 	HERest -C $config -I $label \
 		-t 250.0 150.0 1000.0 -S $data_list \
