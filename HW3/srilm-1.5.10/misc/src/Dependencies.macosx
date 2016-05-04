@@ -1,0 +1,14 @@
+../obj/macosx$(OBJ_OPTION)/option.o: option.c option.h cfuncproto.h
+../obj/macosx$(OBJ_OPTION)/zio.o: zio.c zio.h
+../obj/macosx$(OBJ_OPTION)/fcheck.o: fcheck.c zio.h fcheck.h
+../obj/macosx$(OBJ_OPTION)/fake-rand48.o: fake-rand48.c
+../obj/macosx$(OBJ_OPTION)/version.o: version.c zio.h version.h SRILMversion.h
+../obj/macosx$(OBJ_OPTION)/ztest.o: ztest.c zio.h option.h cfuncproto.h version.h
+../obj/macosx$(OBJ_OPTION)/Debug.o: Debug.cc Debug.h Boolean.h
+../obj/macosx$(OBJ_OPTION)/File.o: File.cc Boolean.h File.h zio.h
+../obj/macosx$(OBJ_OPTION)/tclmain.o: tclmain.cc
+../obj/macosx$(OBJ_OPTION)/testFile.o: testFile.cc File.h Boolean.h
+../bin/macosx$(BIN_OPTION)/ztest: ../obj/macosx$(OBJ_OPTION)/ztest.o
+ztest: ../bin/macosx$(BIN_OPTION)/ztest
+../bin/macosx$(BIN_OPTION)/testFile: ../obj/macosx$(OBJ_OPTION)/testFile.o
+testFile: ../bin/macosx$(BIN_OPTION)/testFile

@@ -1,0 +1,53 @@
+../obj/macosx$(OBJ_OPTION)/qsort.o: qsort.c
+../obj/macosx$(OBJ_OPTION)/MemStats.o: MemStats.cc MemStats.h
+../obj/macosx$(OBJ_OPTION)/LHashTrie.o: LHashTrie.cc
+../obj/macosx$(OBJ_OPTION)/SArrayTrie.o: SArrayTrie.cc Trie.cc Trie.h MemStats.h SArray.h Map.h \
+  ../../include/Boolean.h SArray.cc
+../obj/macosx$(OBJ_OPTION)/Array.o: Array.cc Array.h MemStats.h
+../obj/macosx$(OBJ_OPTION)/IntervalHeap.o: IntervalHeap.cc IntervalHeap.h ../../include/Boolean.h \
+  Array.cc Array.h MemStats.h
+../obj/macosx$(OBJ_OPTION)/Map.o: Map.cc Map.h ../../include/Boolean.h MemStats.h
+../obj/macosx$(OBJ_OPTION)/SArray.o: SArray.cc SArray.h Map.h ../../include/Boolean.h MemStats.h
+../obj/macosx$(OBJ_OPTION)/LHash.o: LHash.cc LHash.h Map.h ../../include/Boolean.h MemStats.h
+../obj/macosx$(OBJ_OPTION)/Map2.o: Map2.cc Map2.h LHash.h Map.h ../../include/Boolean.h MemStats.h \
+  LHash.cc
+../obj/macosx$(OBJ_OPTION)/Trie.o: Trie.cc Trie.h MemStats.h LHash.h Map.h ../../include/Boolean.h \
+  LHash.cc
+../obj/macosx$(OBJ_OPTION)/CachedMem.o: CachedMem.cc CachedMem.h
+../obj/macosx$(OBJ_OPTION)/testArray.o: testArray.cc Array.cc Array.h MemStats.h
+../obj/macosx$(OBJ_OPTION)/testMap.o: testMap.cc SArray.h Map.h ../../include/Boolean.h MemStats.h \
+  LHash.h SArray.cc LHash.cc
+../obj/macosx$(OBJ_OPTION)/benchHash.o: benchHash.cc ../../include/option.h \
+  ../../include/cfuncproto.h LHash.cc LHash.h Map.h \
+  ../../include/Boolean.h MemStats.h Trie.cc Trie.h
+../obj/macosx$(OBJ_OPTION)/testHash.o: testHash.cc LHash.cc LHash.h Map.h ../../include/Boolean.h \
+  MemStats.h
+../obj/macosx$(OBJ_OPTION)/testSizes.o: testSizes.cc Trie.cc Trie.h MemStats.h LHash.h Map.h \
+  ../../include/Boolean.h LHash.cc ../../include/Counts.h \
+  ../../include/XCount.h ../../include/File.h ../../include/Vocab.h \
+  ../../include/LHash.h ../../include/SArray.h ../../include/Map.h \
+  ../../include/Array.h ../../include/MemStats.h \
+  ../../include/NgramStats.h ../../include/LMStats.h \
+  ../../include/TextStats.h ../../include/Prob.h ../../include/Debug.h \
+  ../../include/Trie.h
+../obj/macosx$(OBJ_OPTION)/testCachedMem.o: testCachedMem.cc CachedMem.cc CachedMem.h
+../obj/macosx$(OBJ_OPTION)/testMap2.o: testMap2.cc Map2.cc Map2.h LHash.h Map.h \
+  ../../include/Boolean.h MemStats.h LHash.cc
+../obj/macosx$(OBJ_OPTION)/testTrie.o: testTrie.cc Trie.cc Trie.h MemStats.h LHash.h Map.h \
+  ../../include/Boolean.h LHash.cc
+../bin/macosx$(BIN_OPTION)/testArray: ../obj/macosx$(OBJ_OPTION)/testArray.o
+testArray: ../bin/macosx$(BIN_OPTION)/testArray
+../bin/macosx$(BIN_OPTION)/testMap: ../obj/macosx$(OBJ_OPTION)/testMap.o
+testMap: ../bin/macosx$(BIN_OPTION)/testMap
+../bin/macosx$(BIN_OPTION)/benchHash: ../obj/macosx$(OBJ_OPTION)/benchHash.o
+benchHash: ../bin/macosx$(BIN_OPTION)/benchHash
+../bin/macosx$(BIN_OPTION)/testHash: ../obj/macosx$(OBJ_OPTION)/testHash.o
+testHash: ../bin/macosx$(BIN_OPTION)/testHash
+../bin/macosx$(BIN_OPTION)/testSizes: ../obj/macosx$(OBJ_OPTION)/testSizes.o
+testSizes: ../bin/macosx$(BIN_OPTION)/testSizes
+../bin/macosx$(BIN_OPTION)/testCachedMem: ../obj/macosx$(OBJ_OPTION)/testCachedMem.o
+testCachedMem: ../bin/macosx$(BIN_OPTION)/testCachedMem
+../bin/macosx$(BIN_OPTION)/testMap2: ../obj/macosx$(OBJ_OPTION)/testMap2.o
+testMap2: ../bin/macosx$(BIN_OPTION)/testMap2
+../bin/macosx$(BIN_OPTION)/testTrie: ../obj/macosx$(OBJ_OPTION)/testTrie.o
+testTrie: ../bin/macosx$(BIN_OPTION)/testTrie
