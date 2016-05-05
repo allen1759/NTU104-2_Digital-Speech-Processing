@@ -10,9 +10,7 @@
 
    # Use the GNU C compiler.
    GCC_FLAGS = -Wreturn-type -Wimplicit
-   # CC = cc $(GCC_FLAGS) -Wimplicit-int
    CC = /usr/bin/gcc $(GCC_FLAGS) -Wimplicit-int
-   # CXX = c++ $(GCC_FLAGS) -DINSTANTIATE_TEMPLATES
    CXX = /usr/bin/g++ $(GCC_FLAGS) -DINSTANTIATE_TEMPLATES
 
    ARCHIVE = ar cru
