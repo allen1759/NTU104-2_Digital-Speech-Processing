@@ -8,8 +8,8 @@ CXX = g++
 CXXFLAGS = -O3 -I$(SRIPATH)/include -w
 vpath lib%.a $(SRIPATH)/lib/$(MACHINE_TYPE)
 
-TARGET = mapping
-SRC = mapping.cpp
+TARGET = mydisambig
+SRC = mydisambig.cpp
 OBJ = $(SRC:.cpp=.o)
 TO = ZhuYin-Big5.map
 FROM = Big5-ZhuYin.map
@@ -31,6 +31,8 @@ run:
 map:
 	@#TODO How to map?
 	@echo "Mapping!"
+	$(CXX) $(CXXFLAGS) -c mapping.cpp
+	$(CXX) -o mapping mapping.o
 	@./mapping $(FROM) $(TO)
 	@#matlab mapping.m $(FROM) $(TO)
 	@#python mapping.py $(FROM) $(TO)
