@@ -19,7 +19,7 @@ perl separator_big5.pl testdata/10.txt > Submit_Files/testdata/10.txt
 echo Perl_DONE!
 
 ngram-count -text corpus_seg.txt -write lm.cnt -order 2
-ngram-count -read lm.cnt -lm bigram.lm -unk -order 2
+ngram-count -read lm.cnt -lm Submit_Files/bigram.lm -unk -order 2
 echo ngram-count_DONE!
 
 cd Submit_Files;make map; cd ..
