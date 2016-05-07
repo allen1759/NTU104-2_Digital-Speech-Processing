@@ -8,66 +8,9 @@
 using namespace std;
 
 void init(int argc, char* argv[], Vocab & voc, Ngram & lm, vector<string> & texts, map<string, set<string> > & dict);
+vector<string> Viterbi(string & str, map<string, set<string> > & dict, Vocab & voc, Ngram & lm);
 double getBigramProb(const char *w1, const char *w2, Vocab & voc, Ngram & lm);
 double getTrigramProb(const char *w1, const char *w2, const char *w3, Vocab & voc, Ngram & lm);
-
-vector<string> Viterbi(string & str, map<string, set<string> > & dict, Vocab & voc, Ngram & lm)
-{
-    vector< vector<double> > dp( str.size()/2 );
-    vector< vector<string> > words( str.size()/2 );
-    vector< vector<int> > preind( str.size()/2 );
-
-    for(int i=0; i<dp.size(); i+=1) {
-        string word = str.substr(i*2, 2);
-
-        dp[i].resize( dict[word].size() );
-        words[i].resize( dict[word].size() );
-        preind[i].resize( dict[word].size() );
-
-        set<string>::iterator it = dict[word].begin();
-        for(int j=0; j<words[i].size(); j+=1) {
-            words[i][j] = *it;
-            ++it;
-        }
-    }
-
-    // initial
-    for(int j=0; j<dp[0].size(); j+=1) {
-        dp[0][j] = getBigramProb("", words[0][j].c_str(), voc, lm);
-        preind[0][j] = 0;
-    }
-    // dp
-    for(int i=1; i<dp.size(); i+=1) {
-        for(int j=0; j<dp[i].size(); j+=1) {
-            dp[i][j] = -1e9;
-            for(int k=0; k<dp[i-1].size(); k+=1) {
-                double prob = getBigramProb(words[i-1][k].c_str(), words[i][j].c_str(), voc, lm);
-                prob += dp[i-1][k];
-                if( prob > dp[i][j] ) {
-                    dp[i][j] = prob;
-                    preind[i][j] = k;
-                }
-            }
-        }
-    }
-
-    double maxprob = -1e9;
-    int maxind = 0;
-    for(int i=0; i<dp.back().size(); i+=1) {
-        if( dp.back()[i] > maxprob ) {
-            maxprob = dp.back()[i];
-            maxind = i;
-        }
-    }
-    vector<string> ret( dp.size() );
-    for(int i=ret.size()-1; i>=0; i-=1) {
-        ret[i] = words[i][maxind];
-        maxind = preind[i][maxind];
-    }
-    return ret;
-}
-
-
 
 int main(int argc, char* argv[])
 {
@@ -136,6 +79,62 @@ void init(int argc, char* argv[], Vocab & voc, Ngram & lm, vector<string> & text
             currset.insert( newline.substr(i, 2) );
         }
     }
+}
+
+vector<string> Viterbi(string & str, map<string, set<string> > & dict, Vocab & voc, Ngram & lm)
+{
+    vector< vector<double> > dp( str.size()/2 );
+    vector< vector<string> > words( str.size()/2 );
+    vector< vector<int> > preind( str.size()/2 );
+
+    for(int i=0; i<dp.size(); i+=1) {
+        string word = str.substr(i*2, 2);
+
+        dp[i].resize( dict[word].size() );
+        words[i].resize( dict[word].size() );
+        preind[i].resize( dict[word].size() );
+
+        set<string>::iterator it = dict[word].begin();
+        for(int j=0; j<words[i].size(); j+=1) {
+            words[i][j] = *it;
+            ++it;
+        }
+    }
+
+    // initial
+    for(int j=0; j<dp[0].size(); j+=1) {
+        dp[0][j] = getBigramProb("", words[0][j].c_str(), voc, lm);
+        preind[0][j] = 0;
+    }
+    // dp
+    for(int i=1; i<dp.size(); i+=1) {
+        for(int j=0; j<dp[i].size(); j+=1) {
+            dp[i][j] = -1e9;
+            for(int k=0; k<dp[i-1].size(); k+=1) {
+                double prob = getBigramProb(words[i-1][k].c_str(), words[i][j].c_str(), voc, lm);
+                prob += dp[i-1][k];
+                if( prob > dp[i][j] ) {
+                    dp[i][j] = prob;
+                    preind[i][j] = k;
+                }
+            }
+        }
+    }
+
+    double maxprob = -1e9;
+    int maxind = 0;
+    for(int i=0; i<dp.back().size(); i+=1) {
+        if( dp.back()[i] > maxprob ) {
+            maxprob = dp.back()[i];
+            maxind = i;
+        }
+    }
+    vector<string> ret( dp.size() );
+    for(int i=ret.size()-1; i>=0; i-=1) {
+        ret[i] = words[i][maxind];
+        maxind = preind[i][maxind];
+    }
+    return ret;
 }
 
 // Get P(W2 | W1) -- bigram
